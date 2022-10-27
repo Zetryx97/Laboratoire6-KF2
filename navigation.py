@@ -2,6 +2,9 @@
 #Laboratoire 6 KF2
 #Cette classe va permettre de calculer l'orientation et la position du robot lorsqu'il se déplace
 
+# Note: Il y aura toujours une accélération verticale vers le bas de 1 g, pouvez-vous expliquer pourquoi?
+# Reponsse : La terre a une force gravitationelle de 1g, ce qui attire tout vers le bas.
+
 from time import sleep
 import threading
 from moteur import Moteur
@@ -33,7 +36,7 @@ class Navigation:
                 
                 case "immobile":
                     break
-                    
+
                 case "rotation":
                     break
                 
