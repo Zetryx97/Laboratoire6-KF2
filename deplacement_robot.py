@@ -7,6 +7,7 @@ import numpy as np
 from moteur import Moteur
 from time import sleep
 from moteur import Moteur
+
 class DéplacementRobot:
 
     def __init__(self):
@@ -14,31 +15,38 @@ class DéplacementRobot:
         self.doit_lire_touche = True
         self.vitesse = 0.5
         self.img = np.zeros((512,512,3),np.uint8)
+        self.etat_robot = "immobile"
 
     def deplacer_robot(self):
-        print("Menu pour robot----")
+        print("----Menu pour robot----")
         print("Avancer-'w', Reculer-'s', Tourner sur place  à gauche-'a', Tourner sur place  à droite-'d', Freiner-'space'")
         cv2.imshow('Labo 1', self.img)
         while self.doit_lire_touche:
             key = cv2.waitKey(100)
             if key == ord('w'):
+                self.etat_robot = "translation"
                 self.moteur_Robot.avancer(self.vitesse)
             elif key == ord('s'):
+                self.etat_robot = "translation"
                 self.moteur_Robot.reculer(self.vitesse)
             elif key == ord('d'):
+                self.etat_robot = "rotation"
                 self.moteur_Robot.tourner_droite(self.vitesse)
             elif key == ord('a'):
+                self.etat_robot = "rotation"
                 self.moteur_Robot.tourner_gauche(self.vitesse)
             elif key == ord(' '):
+                self.etat_robot = "immobile"
                 self.moteur_Robot.freiner()
             elif key == ord('q'):
+                self.etat_robot = 'immobile'
                 self.moteur_Robot.freiner()
                 self.moteur_Robot.arreter()
                 self.doit_lire_touche = False
         print('Le programme est fini')
 
-   
 
+if __name__ == "__main__":
+    mouvement_robot = DéplacementRobot()
 
-    
-    
+    mouvement_robot.deplacer_robot()
