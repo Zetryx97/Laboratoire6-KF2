@@ -16,10 +16,20 @@ class Navigation:
     def __init__(self):
         self.moteur = Moteur()
         self.deplacement_robot = DéplacementRobot()
-        self.ÉTAT_IMMOBILE = "immobile"
-        self.ÉTAT_ROTATION = "rotation"
-        self.ÉTAT_TRANSLATION= "translation"
         self.imu = ICM20948()
+        self.gx_biais = 0
+        self.gy_biais = 0
+        self.gz_biais = 0
+        self.ax_biais = 0
+        self.ay_biais = 0
+        self.az_biais = 0
+        self.tab_fenetre_gx = [0]
+        self.tab_fenetre_gy = [0]
+        self.tab_fenetre_gz = [0]
+        self.tab_fenetre_ax = [0]
+        self.tab_fenetre_ay = [0]
+        self.tab_fenetre_az = [0]
+        self.FENETRE = 10
 
     def orientation_position(self):
         #NB:
@@ -31,17 +41,36 @@ class Navigation:
             sleep(0.05)
             ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
             match self.deplacement_robot.deplacer_robot:
-                case "translation":
-                    break
-                
+            
                 case "immobile":
+                    self.gx_biais = gx
+                    self.gy_biais = gy
+                    self.gz_biais = gz
+                    self.ax_biais = ax
+                    self.ay_biais = ay
+                    self.az_biais = az
+                    self.ajout_val_tab_moyenne(self.tab_fenetre_gx,self.gx_biais)
+                    self.ajout_val_tab_moyenne(self.tab_fenetre_gy,self.gy_biais)
+                    self.ajout_val_tab_moyenne(self.tab_fenetre_gz,self.gz_biais)
+                    self.ajout_val_tab_moyenne(self.tab_fenetre_ax,self.ax_biais)
+                    self.ajout_val_tab_moyenne(self.tab_fenetre_ay,self.ay_biais)
+                    self.ajout_val_tab_moyenne(self.tab_fenetre_az,self.az_biais)
                     break
-
+                    
+                case "translation":
+                    ax_corriger = ax - self.calculer_moyenne_fenetrer(self.tab_fenetre_ax)
+                    ax_corriger = ay - self.calculer_moyenne_fenetrer(self.tab_fenetre_ay)
+                    az_corriger = az - self.calculer_moyenne_fenetrer(self.tab_fenetre_az)
+                    break
+                    
                 case "rotation":
+                    gx_corriger = gx - self.calculer_moyenne_fenetrer(self.tab_fenetre_gx)
+                    gx_corriger = gy - self.calculer_moyenne_fenetrer(self.tab_fenetre_gy)
+                    gz_corriger = gz - self.calculer_moyenne_fenetrer(self.tab_fenetre_gz)
                     break
                 
                 case _:
-                    print('Erreur de etat robot')
+                    print('Erreur avec l\'état du robot.')
 
 
     def demarer_robot_navigation(self):
@@ -51,6 +80,15 @@ class Navigation:
         th_deplacement.start()
         while self.deplacement_robot.doit_lire_touche :
             sleep(1)
+
+    def calculer_moyenne_fenetrer(self,tab_moyenne):
+        moyenne = sum(tab_moyenne)/len(tab_moyenne)
+        return (moyenne)
+    
+    def ajout_val_tab_moyenne(self,tab_fenetre,val):
+        tab_fenetre.append(val)        
+        if len(tab_fenetre)>self.FENETRE:
+            del tab_fenetre[0]
         
 if __name__ == "__main__":
     navigation = Navigation()
