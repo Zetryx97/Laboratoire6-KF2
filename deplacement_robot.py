@@ -14,8 +14,10 @@ class DéplacementRobot:
         self.moteur_Robot = Moteur()
         self.doit_lire_touche = True
         self.vitesse = 0.5
+
+        
         self.img = np.zeros((512,512,3),np.uint8)
-        self.etat_robot = "immobile"
+        self.etat_robot = 0 #immobile
 
     def deplacer_robot(self):
         print("----Menu pour robot----")
@@ -24,26 +26,25 @@ class DéplacementRobot:
         while self.doit_lire_touche:
             key = cv2.waitKey(100)
             if key == ord('w'):
-                self.etat_robot = "translation"
+                self.etat_robot = 1 #translation
                 self.moteur_Robot.avancer(self.vitesse)
             elif key == ord('s'):
-                self.etat_robot = "translation"
+                self.etat_robot = 1 #translation
                 self.moteur_Robot.reculer(self.vitesse)
             elif key == ord('d'):
-                self.etat_robot = "rotation"
+                self.etat_robot = 2 #rotation
                 self.moteur_Robot.tourner_droite(self.vitesse)
             elif key == ord('a'):
-                self.etat_robot = "rotation"
+                self.etat_robot = 2 #rotation
                 self.moteur_Robot.tourner_gauche(self.vitesse)
             elif key == ord(' '):
-                self.etat_robot = "immobile"
+                self.etat_robot = 0 #immobile
                 self.moteur_Robot.freiner()
             elif key == ord('q'):
-                self.etat_robot = 'immobile'
+                self.etat_robot = 0 #immobile
                 self.moteur_Robot.freiner()
                 self.moteur_Robot.arreter()
                 self.doit_lire_touche = False
-        print('Le programme est fini')
 
 
 if __name__ == "__main__":
